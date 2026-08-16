@@ -51,12 +51,28 @@
     <main class="main-layout">
       <!-- Left / Center: Wheel Stage -->
       <section class="wheel-stage-container">
-        <div class="wheel-card">
+        <div class="wheel-card" id="wheelCard">
+          <!-- Card Header with Wheel Fullscreen Button -->
+          <div class="wheel-card-header">
+            <div class="wheel-status-badge">
+              <span class="pulse-dot"></span>
+              <span id="wheelStatusText">พร้อมหมุน</span>
+            </div>
+            <button id="wheelCardFullscreenBtn" class="wheel-expand-btn" title="ขยายวงล้อเต็มจอ (สำหรับโปรเจกเตอร์/ทีวี)" aria-label="ขยายวงล้อเต็มจอ">
+              <span class="icon">⛶</span>
+              <span class="btn-text">ขยายเต็มจอ</span>
+            </button>
+          </div>
+
           <div class="wheel-wrapper" id="wheelWrapper">
-            <!-- Wheel Pointer Indicator -->
+            <!-- Wheel Pointer Indicator (สามเหลี่ยมปลายแหลมชี้เข้าหาวงล้ออย่างแม่นยำ 100%) -->
             <div class="wheel-pointer" id="wheelPointer">
-              <svg viewBox="0 0 40 40" class="pointer-svg">
-                <polygon points="40,20 10,5 10,35" fill="currentColor" />
+              <svg viewBox="0 0 50 40" class="pointer-svg" preserveAspectRatio="none">
+                <!-- Needle Pointer: Sharp tip pointing LEFT at (0, 20) with white border & shadow -->
+                <path d="M 0,20 L 44,4 Q 48,3 48,8 L 48,32 Q 48,37 44,36 Z" fill="#ef4444" stroke="#ffffff" stroke-width="3" stroke-linejoin="round" />
+                <!-- Inner accent line -->
+                <polygon points="12,20 42,9 42,31" fill="#dc2626" />
+                <circle cx="36" cy="20" r="4" fill="#ffffff" />
               </svg>
             </div>
 
