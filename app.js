@@ -167,11 +167,16 @@ class WheelApp {
 
     // Handle HTML Audio Files (Repo Online or Custom Upload)
     let audioSrc = null;
-    if (mode === 'repo_spin') {
-      audioSrc = './audio/spin-music.mp3';
+    if (mode === 'song_saeng_so') {
+      audioSrc = './audio/แม่ทรงซ้อพ่อทรงเอ.mp3';
+    } else if (mode === 'song_doraemon') {
+      audioSrc = './audio/โดราเอม่อน.mp3';
+    } else if (mode === 'repo_spin') {
+      audioSrc = './audio/แม่ทรงซ้อพ่อทรงเอ.mp3';
     } else if (mode === 'custom_spin' && this.customSpinAudioUrl) {
       audioSrc = this.customSpinAudioUrl;
     }
+
 
     if (audioSrc) {
       try {

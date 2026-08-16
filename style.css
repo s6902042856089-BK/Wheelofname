@@ -104,14 +104,23 @@ body {
   gap: 12px;
 }
 
-.logo-icon {
-  font-size: 28px;
-  animation: pulseLogo 3s infinite ease-in-out;
+.brand-logo-img {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: contain;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
+  transition: transform 0.2s ease;
 }
 
-@keyframes pulseLogo {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.1) rotate(15deg); }
+.brand-logo-img:hover {
+  transform: scale(1.08) rotate(3deg);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .brand-text h1 {
@@ -122,10 +131,53 @@ body {
   color: var(--text-primary);
 }
 
+.brand-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .brand-text .subtitle {
   font-size: 0.8rem;
   color: var(--text-secondary);
   font-weight: 400;
+}
+
+.developer-tag {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* App Footer */
+.app-footer {
+  width: 100%;
+  padding: 16px 24px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.footer-content {
+  max-width: 1560px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.footer-logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: contain;
 }
 
 .nav-actions {

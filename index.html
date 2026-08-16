@@ -7,6 +7,8 @@
   <meta name="description" content="เว็บสุ่มชื่อนักเรียนสำหรับใช้ในห้องเรียน หมุนวงล้อ ลื่นไหล ไม่มีโฆษณา บันทึกห้องเรียนได้ รองรับโปรเจกเตอร์และสมาร์ททีวี">
   <meta name="theme-color" content="#0ea5e9">
 
+  <link rel="icon" type="image/png" href="BK.png">
+
   <!-- Google Fonts: Kanit (ทุกน้ำหนัก 300, 400, 500, 600, 700, 800) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,10 +24,13 @@
     <!-- Header Bar -->
     <header class="navbar">
       <div class="nav-brand">
-        <div class="logo-icon">🎡</div>
+        <img src="BK.png" alt="BK Logo" class="brand-logo-img" onerror="this.style.display='none'">
         <div class="brand-text">
           <h1>วงล้อสุ่มชื่อนักเรียน</h1>
-          <span class="subtitle">Classroom Wheel of Names</span>
+          <div class="brand-sub-row">
+            <span class="subtitle">Classroom Wheel of Names</span>
+            <span class="developer-tag">พัฒนาเว็บไซต์โดย นายกิตติศักดิ์ บุญเกตุ</span>
+          </div>
         </div>
       </div>
 
@@ -168,7 +173,9 @@
               <button id="previewSpinMusicBtn" class="btn btn-sm btn-ghost" title="ทดลองฟัง">▶️ ลองฟัง</button>
             </div>
             <select id="spinMusicSelect" class="styled-select">
-              <option value="repo_spin">🌐 เพลงออนไลน์ของฉัน (audio/spin-music.mp3)</option>
+              <option value="song_saeng_so">🎶 แม่ทรงซ้อพ่อทรงเอ (audio/แม่ทรงซ้อพ่อทรงเอ.mp3)</option>
+              <option value="song_doraemon">🎶 โดราเอม่อน (audio/โดราเอม่อน.mp3)</option>
+              <option value="repo_spin">🌐 เพลงออนไลน์ทั่วไป (audio/spin-music.mp3)</option>
               <option value="tiktok_edm" selected>⚡ TikTok Dance Beat (แดนซ์มันส์ๆ)</option>
               <option value="drumroll">🥁 ลุ้นระทึก ดรัมโรล (Suspense Beat)</option>
               <option value="arcade">🕹️ เรโทรเกมโชว์ (Retro Game Show)</option>
@@ -186,6 +193,8 @@
               <button id="previewWinMusicBtn" class="btn btn-sm btn-ghost" title="ทดลองฟัง">▶️ ลองฟัง</button>
             </div>
             <select id="winMusicSelect" class="styled-select">
+              <option value="song_doraemon">🎶 โดราเอม่อน (audio/โดราเอม่อน.mp3)</option>
+              <option value="song_saeng_so">🎶 แม่ทรงซ้อพ่อทรงเอ (audio/แม่ทรงซ้อพ่อทรงเอ.mp3)</option>
               <option value="repo_win">🌐 เพลงฉลองออนไลน์ (audio/win-music.mp3)</option>
               <option value="tiktok_party" selected>🥳 TikTok Party Win (ฉลองสุดเหวี่ยง)</option>
               <option value="fanfare">🎺 แฟนแฟร์อลังการ (Grand Fanfare)</option>
@@ -227,6 +236,14 @@
         </div>
       </aside>
     </main>
+
+    <!-- App Footer with Credit -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <img src="BK.png" alt="BK Logo" class="footer-logo-img" onerror="this.style.display='none'">
+        <span>พัฒนาเว็บไซต์โดย <strong>นายกิตติศักดิ์ บุญเกตุ</strong></span>
+      </div>
+    </footer>
 
     <!-- Add Class Modal -->
     <div id="addClassModal" class="modal-backdrop">
