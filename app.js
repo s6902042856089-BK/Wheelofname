@@ -156,46 +156,69 @@ class WheelApp {
   }
 
   // ==========================================
-  // Music Engine: Spin BGM (TikTok & Presets)
+  // Music Engine: Spin BGM (TikTok, Repo & Custom)
   // ==========================================
   startSpinMusic() {
     if (!this.soundEnabled) return;
-    this.stopSpinMusic();
     this.resumeAudio();
 
     const mode = this.spinMusicSelect.value;
     if (mode === 'ticks_only') return;
 
-    if (mode === 'custom_spin' && this.customSpinAudioUrl) {
+    // Handle HTML Audio Files (Repo Online or Custom Upload)
+    let audioSrc = null;
+    if (mode === 'repo_spin') {
+      audioSrc = './audio/spin-music.mp3';
+    } else if (mode === 'custom_spin' && this.customSpinAudioUrl) {
+      audioSrc = this.customSpinAudioUrl;
+    }
+
+    if (audioSrc) {
       try {
-        this.activeSpinAudio = new Audio(this.customSpinAudioUrl);
+        // Create audio element if not exists or if source changed
+        if (!this.activeSpinAudio || this.activeSpinAudio.getAttribute('data-src') !== audioSrc) {
+          if (this.activeSpinAudio) {
+            this.activeSpinAudio.pause();
+          }
+          this.activeSpinAudio = new Audio(audioSrc);
+          this.activeSpinAudio.setAttribute('data-src', audioSrc);
+          this.activeSpinAudio.loop = true; // วนซ้ำเมื่อจบเพลง
+        }
+
         this.activeSpinAudio.volume = this.volume;
         this.activeSpinAudio.loop = true;
-        this.activeSpinAudio.play().catch(() => {});
+
+        // เล่นต่อจากเดิม (ไม่รีเซ็ตเวลา)
+        const playPromise = this.activeSpinAudio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(err => {
+            console.log('Audio autoplay prevented or file not found yet:', err);
+          });
+        }
       } catch (e) {}
       return;
     }
 
+    // Web Audio Synthesizer Presets
     if (!this.audioCtx) return;
 
     if (mode === 'tiktok_edm') {
       // 128 BPM energetic electronic TikTok beat loop with bass & synth pulse
       const bpm = 128;
       const beatDuration = 60 / bpm;
-      let step = 0;
-      const bassNotes = [130.81, 146.83, 164.81, 196.00]; // C3, D3, E3, G3
+      if (!this.synthStep) this.synthStep = 0;
+      const bassNotes = [130.81, 146.83, 164.81, 196.00];
       const synthNotes = [523.25, 659.25, 783.99, 1046.50];
 
       const playStep = () => {
         if (!this.isSpinning && !this.isPreviewingSpin) return;
         const now = this.audioCtx.currentTime;
 
-        // Kick / Bass pulse on quarter beats
-        if (step % 2 === 0) {
+        if (this.synthStep % 2 === 0) {
           const osc = this.audioCtx.createOscillator();
           const gain = this.audioCtx.createGain();
           osc.type = 'sine';
-          const rootFreq = bassNotes[(Math.floor(step / 4)) % bassNotes.length];
+          const rootFreq = bassNotes[(Math.floor(this.synthStep / 4)) % bassNotes.length];
           osc.frequency.setValueAtTime(rootFreq * 1.5, now);
           osc.frequency.exponentialRampToValueAtTime(rootFreq * 0.5, now + 0.15);
 
@@ -208,11 +231,10 @@ class WheelApp {
           osc.stop(now + 0.2);
         }
 
-        // Upbeat Snare / Hi-hat synth tap
         const hihat = this.audioCtx.createOscillator();
         const hGain = this.audioCtx.createGain();
         hihat.type = 'triangle';
-        const note = synthNotes[step % synthNotes.length];
+        const note = synthNotes[this.synthStep % synthNotes.length];
         hihat.frequency.setValueAtTime(note, now);
         hGain.gain.setValueAtTime(this.volume * 0.22, now);
         hGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
@@ -222,13 +244,12 @@ class WheelApp {
         hihat.start(now);
         hihat.stop(now + 0.12);
 
-        step++;
+        this.synthStep++;
       };
 
       playStep();
       this.activeSynthInterval = setInterval(playStep, (beatDuration / 2) * 1000);
     } else if (mode === 'drumroll') {
-      // Rapid snare / tension roll building excitement
       let rollStep = 0;
       const playRoll = () => {
         if (!this.isSpinning && !this.isPreviewingSpin) return;
@@ -249,7 +270,6 @@ class WheelApp {
       playRoll();
       this.activeSynthInterval = setInterval(playRoll, 75);
     } else if (mode === 'arcade') {
-      // 8-bit retro arcade game show tune
       const arcadeNotes = [261.63, 329.63, 392.0, 523.25, 440.0, 349.23, 392.0, 523.25];
       let step = 0;
       const playArcade = () => {
@@ -273,15 +293,16 @@ class WheelApp {
     }
   }
 
-  stopSpinMusic() {
+  stopSpinMusic(resetPosition = false) {
     if (this.activeSynthInterval) {
       clearInterval(this.activeSynthInterval);
       this.activeSynthInterval = null;
     }
     if (this.activeSpinAudio) {
-      this.activeSpinAudio.pause();
-      this.activeSpinAudio.currentTime = 0;
-      this.activeSpinAudio = null;
+      this.activeSpinAudio.pause(); // หยุดพักชั่วคราว ไม่ลบเวลา เพื่อให้เล่นต่อจากเดิม
+      if (resetPosition) {
+        this.activeSpinAudio.currentTime = 0;
+      }
     }
     this.activeSynthNodes.forEach(node => {
       try { node.stop(); } catch (e) {}
@@ -299,11 +320,20 @@ class WheelApp {
 
     const mode = this.winMusicSelect.value;
 
-    if (mode === 'custom_win' && this.customWinAudioUrl) {
+    let audioSrc = null;
+    if (mode === 'repo_win') {
+      audioSrc = './audio/win-music.mp3';
+    } else if (mode === 'custom_win' && this.customWinAudioUrl) {
+      audioSrc = this.customWinAudioUrl;
+    }
+
+    if (audioSrc) {
       try {
-        this.activeWinAudio = new Audio(this.customWinAudioUrl);
+        this.activeWinAudio = new Audio(audioSrc);
         this.activeWinAudio.volume = this.volume;
-        this.activeWinAudio.play().catch(() => {});
+        this.activeWinAudio.play().catch(err => {
+          console.log('Win audio playback note:', err);
+        });
       } catch (e) {}
       return;
     }
@@ -311,12 +341,11 @@ class WheelApp {
     if (!this.audioCtx) return;
 
     if (mode === 'tiktok_party') {
-      // High-energy TikTok celebration horn + victory chords
       const chords = [
-        [523.25, 659.25, 783.99], // C Major
-        [587.33, 739.99, 880.00], // D Major
-        [659.25, 830.61, 987.77], // E Major
-        [1046.5, 1318.5, 1567.9]  // High C Celebration
+        [523.25, 659.25, 783.99],
+        [587.33, 739.99, 880.00],
+        [659.25, 830.61, 987.77],
+        [1046.5, 1318.5, 1567.9]
       ];
 
       chords.forEach((chord, chordIdx) => {
@@ -339,7 +368,6 @@ class WheelApp {
         });
       });
     } else if (mode === 'fanfare') {
-      // Grand royal brass fanfare
       const notes = [
         { f: 523.25, d: 0.15, t: 0 },
         { f: 523.25, d: 0.15, t: 0.15 },
@@ -368,7 +396,6 @@ class WheelApp {
         osc.stop(start + n.d);
       });
     } else if (mode === 'cute_pop') {
-      // Happy Kawaii Marimba / Bell Pop melody
       const melody = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1318.51];
       melody.forEach((freq, idx) => {
         const osc = this.audioCtx.createOscillator();
