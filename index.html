@@ -95,6 +95,26 @@
               <span>🔀 สลับตำแหน่งชื่อ</span>
             </button>
           </div>
+
+          <!-- Winner Celebration Modal (อยู่ภายในการ์ดวงล้อ เพื่อให้แสดงผลทับหน้าสุดเสมอทุกโหมดเต็มจอ) -->
+          <div id="winnerModal" class="modal-backdrop">
+            <div class="modal-card winner-card">
+              <button class="modal-close-btn" id="closeWinnerModalBtn">&times;</button>
+              <div class="celebration-badge">🎉 ยินดีด้วย! 🎉</div>
+              <div class="winner-title">ผู้โชคดีได้แก่</div>
+              <div class="winner-name-display" id="winnerNameDisplay">-</div>
+              
+              <div class="winner-actions">
+                <button id="removeWinnerBtn" class="btn btn-danger">
+                  ❌ ลบชื่อนี้ออกจากวงล้อ
+                </button>
+                <button id="keepWinnerBtn" class="btn btn-primary">
+                  ✅ เก็บชื่อไว้ในวงล้อต่อ
+                </button>
+              </div>
+              <div class="modal-tip">กดปุ่ม Esc หรือกดปิดเพื่อเล่นต่อ</div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -166,26 +186,6 @@
         </div>
       </aside>
     </main>
-
-    <!-- Winner Celebration Modal -->
-    <div id="winnerModal" class="modal-backdrop">
-      <div class="modal-card winner-card">
-        <button class="modal-close-btn" id="closeWinnerModalBtn">&times;</button>
-        <div class="celebration-badge">🎉 ยินดีด้วย! 🎉</div>
-        <div class="winner-title">ผู้โชคดีได้แก่</div>
-        <div class="winner-name-display" id="winnerNameDisplay">-</div>
-        
-        <div class="winner-actions">
-          <button id="removeWinnerBtn" class="btn btn-danger">
-            ❌ ลบชื่อนี้ออกจากวงล้อ
-          </button>
-          <button id="keepWinnerBtn" class="btn btn-primary">
-            ✅ เก็บชื่อไว้ในวงล้อต่อ
-          </button>
-        </div>
-        <div class="modal-tip">กดปุ่ม Esc หรือกดปิดเพื่อเล่นต่อ</div>
-      </div>
-    </div>
 
     <!-- Add Class Modal -->
     <div id="addClassModal" class="modal-backdrop">
