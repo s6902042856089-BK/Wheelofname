@@ -601,14 +601,17 @@ class WheelApp {
     const finalAngle = startAngle + totalRotation;
     const startTime = performance.now();
 
-    // Overshoot magnitude: 0.55 to 0.75 of a slice width for dramatic suspense
-    const overshootRad = arc * 0.65;
+    // สุ่มรูปแบบการหมุนในแต่ละรอบ (ไม่ต้องเกิดการเด้งย้อนกลับทุกรอบ เพื่อความลุ้นและคาดเดาไม่ได้)
+    // โอกาส ~50% จะเกิด Overshoot & Bounce-back เลยช่องแล้วดึงกลับ
+    // โอกาส ~50% จะเป็นการชะลอความเร็วแบบนุ่มนวลตรงเข้าสู่ชื่อผู้ชนะทันที
+    const willBounceBack = Math.random() < 0.55;
+    const overshootRad = willBounceBack ? arc * (0.55 + Math.random() * 0.25) : 0;
 
     const animate = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / durationMs, 1);
 
-      // Deceleration with suspenseful overshoot and pull-back physics
+      // Deceleration with randomized suspenseful overshoot and pull-back physics
       const currentWheelAngle = this.computeOvershootAngle(startAngle, totalRotation, overshootRad, progress);
       this.currentAngle = currentWheelAngle;
 
@@ -641,7 +644,7 @@ class WheelApp {
     requestAnimationFrame(animate);
   }
 
-  // Smooth deceleration easing with realistic spring overshoot and pull-back
+  // Smooth deceleration easing with realistic spring overshoot and pull-back (if overshootRad > 0)
   computeOvershootAngle(startAngle, totalDelta, overshootRad, t) {
     if (t >= 1) return startAngle + totalDelta;
     if (t <= 0) return startAngle;
@@ -651,7 +654,7 @@ class WheelApp {
     
     // Suspense overshoot pulse in the final 35% of the animation (t from 0.65 to 1.0)
     let overshoot = 0;
-    if (t > 0.65) {
+    if (overshootRad > 0 && t > 0.65) {
       const localT = (t - 0.65) / 0.35; // 0 to 1
       // Sine wave pulse that rises, peaks at localT ~ 0.45, then smoothly pulls backwards to 0 at localT = 1.0
       overshoot = Math.sin(localT * Math.PI) * Math.pow(1 - localT * 0.3, 2) * overshootRad;
