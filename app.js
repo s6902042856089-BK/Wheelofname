@@ -1009,8 +1009,16 @@ class WheelApp {
     this.saveHistory();
     this.renderHistory();
 
-    // Show winner celebration modal
+    // Show winner celebration modal (Ensure 1 line auto-fit)
     this.winnerNameDisplay.textContent = winner;
+    this.winnerNameDisplay.style.fontSize = '';
+    if (winner.length > 30) {
+      this.winnerNameDisplay.style.fontSize = '1.65rem';
+    } else if (winner.length > 22) {
+      this.winnerNameDisplay.style.fontSize = '2.0rem';
+    } else if (winner.length > 15) {
+      this.winnerNameDisplay.style.fontSize = '2.4rem';
+    }
     this.winnerModal.classList.add('active');
 
     // Auto remove if toggled
