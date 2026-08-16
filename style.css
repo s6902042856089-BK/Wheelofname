@@ -267,7 +267,7 @@ body {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  padding: 28px;
+  padding: 24px 28px 28px;
   width: 100%;
   max-width: 760px;
   display: flex;
@@ -276,6 +276,91 @@ body {
   justify-content: center;
   box-shadow: var(--card-shadow);
   position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Wheel Fullscreen Mode Styling */
+.wheel-card:fullscreen,
+.wheel-card.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  border-radius: 0 !important;
+  border: none !important;
+  padding: 20px !important;
+  background: var(--bg-primary) !important;
+  z-index: 9999;
+  justify-content: space-evenly;
+}
+
+.wheel-card:fullscreen .wheel-wrapper,
+.wheel-card.is-fullscreen .wheel-wrapper {
+  max-width: min(72vh, 650px);
+  width: min(72vh, 650px);
+}
+
+/* Card Header */
+.wheel-card-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.wheel-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--success);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulseDot 2s infinite;
+}
+
+.pulse-dot.spinning {
+  background-color: var(--accent);
+  box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.wheel-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--primary);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wheel-expand-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .wheel-wrapper {
@@ -286,7 +371,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 20px;
 }
 
 #wheelCanvas {
@@ -298,27 +383,29 @@ body {
   transition: filter 0.3s ease;
 }
 
-/* Pointer Arrow */
+/* Sharp Pointer Indicator: Tip is at (0, 20) inside the SVG, positioned exactly at 3 o'clock */
 .wheel-pointer {
   position: absolute;
-  right: -12px;
+  right: -16px;
   top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  color: var(--pointer-color);
-  z-index: 5;
-  filter: drop-shadow(-3px 2px 4px rgba(0, 0, 0, 0.3));
-  transition: transform 0.1s ease;
+  margin-top: -24px; /* Exact vertical center for height: 48px */
+  width: 54px;
+  height: 48px;
+  z-index: 10;
+  filter: drop-shadow(-4px 2px 5px rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+  transform-origin: 46px 24px; /* Pivot at base during tick */
+  transition: transform 0.08s ease-out;
 }
 
 .wheel-pointer.tick {
-  transform: translateY(-50%) rotate(16deg) scale(1.15);
+  transform: rotate(20deg);
 }
 
 .pointer-svg {
   width: 100%;
   height: 100%;
+  display: block;
 }
 
 /* Center Spin Button */
@@ -330,9 +417,9 @@ body {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff, #f1f5f9);
+  background: radial-gradient(circle at 35% 35%, #ffffff, #f0f9ff);
   border: 5px solid var(--primary);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.8);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35), inset 0 2px 4px rgba(255, 255, 255, 0.8);
   cursor: pointer;
   display: flex;
   flex-direction: column;
