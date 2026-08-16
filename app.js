@@ -689,21 +689,43 @@ class WheelApp {
 
   triggerConfetti() {
     if (typeof confetti === 'function') {
-      // Fire confetti bursts from both sides
-      const count = 200;
-      const defaults = { origin: { y: 0.7 } };
+      try {
+        const targetContainer = document.fullscreenElement || document.body;
+        let confettiCanvas = document.getElementById('activeConfettiCanvas');
+        if (!confettiCanvas) {
+          confettiCanvas = document.createElement('canvas');
+          confettiCanvas.id = 'activeConfettiCanvas';
+          confettiCanvas.style.position = 'fixed';
+          confettiCanvas.style.inset = '0';
+          confettiCanvas.style.width = '100vw';
+          confettiCanvas.style.height = '100vh';
+          confettiCanvas.style.pointerEvents = 'none';
+          confettiCanvas.style.zIndex = '10001';
+        }
 
-      const fire = (particleRatio, opts) => {
-        confetti(Object.assign({}, defaults, opts, {
-          particleCount: Math.floor(count * particleRatio)
-        }));
-      };
+        if (confettiCanvas.parentElement !== targetContainer) {
+          targetContainer.appendChild(confettiCanvas);
+        }
 
-      fire(0.25, { spread: 26, startVelocity: 55 });
-      fire(0.2, { spread: 60 });
-      fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-      fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-      fire(0.1, { spread: 120, startVelocity: 45 });
+        const customConfetti = confetti.create(confettiCanvas, { resize: true, useWorker: true });
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        const fire = (particleRatio, opts) => {
+          customConfetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+          }));
+        };
+
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
+      } catch (e) {
+        // Fallback to default confetti
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+      }
     }
   }
 
