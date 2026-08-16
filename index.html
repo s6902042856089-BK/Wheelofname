@@ -155,10 +155,49 @@
           </div>
         </div>
 
-        <!-- Wheel Preferences -->
+        <!-- Wheel & Classroom Music Preferences -->
         <div class="panel-section">
           <div class="section-header">
-            <span class="section-title">⚙️ การตั้งค่าการสุ่ม</span>
+            <span class="section-title">🎵 เพลงประกอบ & เสียงเอฟเฟกต์</span>
+          </div>
+
+          <!-- Spin Music Selection -->
+          <div class="setting-item">
+            <div class="setting-sub-header">
+              <label for="spinMusicSelect">🎶 เพลงตอนกำลังหมุน (Spin BGM):</label>
+              <button id="previewSpinMusicBtn" class="btn btn-sm btn-ghost" title="ทดลองฟัง">▶️ ลองฟัง</button>
+            </div>
+            <select id="spinMusicSelect" class="styled-select">
+              <option value="drumroll">🥁 ลุ้นระทึก ดรัมโรล (Suspense Beat)</option>
+              <option value="tiktok_edm" selected>⚡ TikTok Dance Beat (แดนซ์มันส์ๆ)</option>
+              <option value="arcade">🕹️ เรโทรเกมโชว์ (Retro Game Show)</option>
+              <option value="ticks_only">🎡 เสียงติ๊กอย่างเดียว (Classic)</option>
+              <option value="custom_spin">📁 เพลง MP3 ของฉัน (กำหนดเอง)</option>
+            </select>
+            <input type="file" id="customSpinAudioInput" accept="audio/*" class="custom-file-input" style="display: none;">
+            <div id="customSpinAudioName" class="file-chosen-text" style="display: none;"></div>
+          </div>
+
+          <!-- Win Music Selection -->
+          <div class="setting-item">
+            <div class="setting-sub-header">
+              <label for="winMusicSelect">🎉 เพลงตอนได้ผู้ชนะ (Victory):</label>
+              <button id="previewWinMusicBtn" class="btn btn-sm btn-ghost" title="ทดลองฟัง">▶️ ลองฟัง</button>
+            </div>
+            <select id="winMusicSelect" class="styled-select">
+              <option value="tiktok_party" selected>🥳 TikTok Party Win (ฉลองสุดเหวี่ยง)</option>
+              <option value="fanfare">🎺 แฟนแฟร์อลังการ (Grand Fanfare)</option>
+              <option value="cute_pop">💖 น่ารักสดใส ป๊อป (Cute Pop Win)</option>
+              <option value="custom_win">📁 เพลง MP3 ของฉัน (กำหนดเอง)</option>
+            </select>
+            <input type="file" id="customWinAudioInput" accept="audio/*" class="custom-file-input" style="display: none;">
+            <div id="customWinAudioName" class="file-chosen-text" style="display: none;"></div>
+          </div>
+
+          <!-- Volume & Duration -->
+          <div class="setting-item">
+            <label for="musicVolume">🔊 ระดับเสียง: <span id="volumeValue">80</span>%</label>
+            <input type="range" id="musicVolume" min="0" max="100" value="80" step="5" class="styled-range">
           </div>
 
           <div class="setting-item">
