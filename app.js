@@ -2,20 +2,20 @@
    Classroom Wheel of Names - Core Engine & Logic
    ========================================================= */
 
-// Color Palette for Slices
+// Color Palette for Slices - Vibrant & Cheerful Palette
 const SLICE_COLORS = [
-  '#f43f5e', // Rose
-  '#3b82f6', // Blue
+  '#0284c7', // Sky Blue
+  '#f59e0b', // Amber Sun
   '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#8b5cf6', // Violet
-  '#06b6d4', // Cyan
   '#ec4899', // Pink
-  '#84cc16', // Lime
-  '#6366f1', // Indigo
+  '#06b6d4', // Cyan
+  '#8b5cf6', // Violet
+  '#f97316', // Bright Orange
   '#14b8a6', // Teal
-  '#f97316', // Orange
-  '#a855f7'  // Purple
+  '#e11d48', // Crimson Rose
+  '#84cc16', // Fresh Lime
+  '#3b82f6', // Royal Blue
+  '#d946ef'  // Fuchsia
 ];
 
 // Default sample student names for new classroom
@@ -454,7 +454,7 @@ class WheelApp {
       this.ctx.stroke();
 
       this.ctx.fillStyle = '#64748b';
-      this.ctx.font = 'bold 18px Prompt, sans-serif';
+      this.ctx.font = 'bold 18px Kanit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'middle';
       this.ctx.fillText('กรุณาเพิ่มรายชื่อนักเรียน', centerX, centerY);
@@ -519,11 +519,11 @@ class WheelApp {
   }
 
   getOptimalFontSize(count, radius) {
-    if (count <= 6) return 'bold 19px Prompt, sans-serif';
-    if (count <= 12) return 'bold 16px Prompt, sans-serif';
-    if (count <= 24) return 'bold 14px Prompt, sans-serif';
-    if (count <= 40) return 'bold 12px Prompt, sans-serif';
-    return 'bold 10px Prompt, sans-serif';
+    if (count <= 6) return 'bold 20px Kanit, sans-serif';
+    if (count <= 12) return 'bold 17px Kanit, sans-serif';
+    if (count <= 24) return 'bold 15px Kanit, sans-serif';
+    if (count <= 40) return 'bold 13px Kanit, sans-serif';
+    return 'bold 11px Kanit, sans-serif';
   }
 
   spin() {
