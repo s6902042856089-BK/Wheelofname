@@ -555,6 +555,24 @@ body {
   color: var(--text-secondary);
 }
 
+.setting-sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-chosen-text {
+  font-size: 0.78rem;
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .setting-item-toggle {
   display: flex;
   align-items: center;
