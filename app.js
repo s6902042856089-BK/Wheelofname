@@ -367,15 +367,31 @@ class WheelApp {
       this.render();
     });
 
-    // Fullscreen toggle
+    // Fullscreen toggle (Navbar)
     document.getElementById('fullscreenBtn').addEventListener('click', () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        }
+      this.toggleFullscreen(document.documentElement);
+    });
+
+    // Wheel Card Dedicated Fullscreen Toggle
+    const wheelCard = document.getElementById('wheelCard');
+    const wheelCardFullscreenBtn = document.getElementById('wheelCardFullscreenBtn');
+    if (wheelCardFullscreenBtn) {
+      wheelCardFullscreenBtn.addEventListener('click', () => {
+        this.toggleFullscreen(wheelCard);
+      });
+    }
+
+    // Fullscreen change listener to resize canvas
+    document.addEventListener('fullscreenchange', () => {
+      const isCardFs = document.fullscreenElement === wheelCard;
+      if (wheelCardFullscreenBtn) {
+        wheelCardFullscreenBtn.querySelector('.btn-text').textContent = isCardFs ? 'ย่อหน้าต่าง' : 'ขยายเต็มจอ';
+        wheelCardFullscreenBtn.querySelector('.icon').textContent = isCardFs ? '🗗' : '⛶';
       }
+      setTimeout(() => {
+        this.resizeCanvas();
+        this.render();
+      }, 100);
     });
 
     // Resize
@@ -383,6 +399,18 @@ class WheelApp {
       this.resizeCanvas();
       this.render();
     });
+  }
+
+  toggleFullscreen(element) {
+    if (!document.fullscreenElement) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen().catch(() => {});
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
   }
 
   closeModals() {
@@ -447,13 +475,13 @@ class WheelApp {
       this.ctx.save();
       this.ctx.beginPath();
       this.ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      this.ctx.fillStyle = '#e2e8f0';
+      this.ctx.fillStyle = '#e0f2fe';
       this.ctx.fill();
       this.ctx.lineWidth = 4;
-      this.ctx.strokeStyle = '#cbd5e1';
+      this.ctx.strokeStyle = '#bae6fd';
       this.ctx.stroke();
 
-      this.ctx.fillStyle = '#64748b';
+      this.ctx.fillStyle = '#0369a1';
       this.ctx.font = 'bold 18px Kanit, sans-serif';
       this.ctx.textAlign = 'center';
       this.ctx.textBaseline = 'middle';
@@ -480,11 +508,11 @@ class WheelApp {
       this.ctx.fill();
 
       // Border line
-      this.ctx.lineWidth = 2;
+      this.ctx.lineWidth = 2.5;
       this.ctx.strokeStyle = '#ffffff';
       this.ctx.stroke();
 
-      // Text on Slice
+      // Text on Slice (Aligned with needle at 0 radians)
       this.ctx.save();
       this.ctx.translate(centerX, centerY);
       this.ctx.rotate(sliceStartAngle + arc / 2);
@@ -496,7 +524,7 @@ class WheelApp {
 
       // Trim long text with ellipsis
       let text = this.names[i];
-      const maxTextWidth = radius - 60;
+      const maxTextWidth = radius - 55;
       if (this.ctx.measureText(text).width > maxTextWidth) {
         while (this.ctx.measureText(text + '...').width > maxTextWidth && text.length > 1) {
           text = text.substring(0, text.length - 1);
@@ -504,9 +532,9 @@ class WheelApp {
         text += '...';
       }
 
-      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      this.ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
       this.ctx.shadowBlur = 4;
-      this.ctx.fillText(text, radius - 20, 0);
+      this.ctx.fillText(text, radius - 18, 0);
       this.ctx.restore();
     }
 
@@ -536,6 +564,12 @@ class WheelApp {
     this.isSpinning = true;
     this.resumeAudio();
 
+    // Update UI status badge
+    const statusText = document.getElementById('wheelStatusText');
+    const pulseDot = document.querySelector('.pulse-dot');
+    if (statusText) statusText.textContent = 'กำลังสุ่ม...';
+    if (pulseDot) pulseDot.classList.add('spinning');
+
     const durationSeconds = parseFloat(this.durationInput.value) || 6;
     const durationMs = durationSeconds * 1000;
 
@@ -544,29 +578,43 @@ class WheelApp {
     const numSlices = this.names.length;
     const arc = (2 * Math.PI) / numSlices;
 
-    // Pointer is at angle 0 (3 o'clock / right side).
-    // Slices are drawn with slice 0 starting at currentAngle.
-    // Winning slice center should end at angle 0.
-    // (targetAngle + winningIndex * arc + arc/2) % 2PI == 0 (or multiple of 2PI)
-    const extraRotations = 6 + Math.floor(Math.random() * 4); // 6 to 9 full spins
-    const targetSliceOffset = (winningIndex * arc) + (arc * (0.2 + Math.random() * 0.6)); // landing inside the slice
-    const totalRotation = (extraRotations * 2 * Math.PI) + (2 * Math.PI - targetSliceOffset) - (this.currentAngle % (2 * Math.PI));
+    // Pointer is located at 3 o'clock (0 radians / right side).
+    // Slices are drawn with slice i spanning [currentAngle + i*arc, currentAngle + (i+1)*arc].
+    // Slice i center is at currentAngle + i*arc + arc/2.
+    // For slice winningIndex center to align EXACTLY with angle 0 (3 o'clock):
+    // (finalTargetAngle + winningIndex*arc + arc/2) % 2PI = 0
+    // => finalTargetAngle = 2PI - (winningIndex*arc + arc/2)
+    const targetSliceCenterOffset = (winningIndex * arc) + (arc / 2);
+    const extraRotations = 7 + Math.floor(Math.random() * 3); // 7 to 9 full spins
+    
+    // Normalized current angle in [0, 2PI)
+    const currentNormalized = (this.currentAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+    const targetNormalized = (2 * Math.PI - targetSliceCenterOffset) % (2 * Math.PI);
+    
+    let angleDiff = targetNormalized - currentNormalized;
+    if (angleDiff < 0) {
+      angleDiff += 2 * Math.PI;
+    }
 
+    const totalRotation = (extraRotations * 2 * Math.PI) + angleDiff;
     const startAngle = this.currentAngle;
     const finalAngle = startAngle + totalRotation;
     const startTime = performance.now();
+
+    // Overshoot magnitude: 0.55 to 0.75 of a slice width for dramatic suspense
+    const overshootRad = arc * 0.65;
 
     const animate = (now) => {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / durationMs, 1);
 
-      // Custom smooth deceleration cubic-bezier curve
-      const easeOut = this.easeOutCubic(progress);
-      this.currentAngle = startAngle + totalRotation * easeOut;
+      // Deceleration with suspenseful overshoot and pull-back physics
+      const currentWheelAngle = this.computeOvershootAngle(startAngle, totalRotation, overshootRad, progress);
+      this.currentAngle = currentWheelAngle;
 
-      // Calculate current slice under pointer for tick sound
-      const normalizedAngle = (2 * Math.PI - (this.currentAngle % (2 * Math.PI))) % (2 * Math.PI);
-      const currentPointerIndex = Math.floor(normalizedAngle / arc);
+      // Calculate slice under pointer for realistic tick sound
+      const normAngle = (2 * Math.PI - (this.currentAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI)) % (2 * Math.PI);
+      const currentPointerIndex = Math.floor(normAngle / arc);
 
       if (currentPointerIndex !== this.lastTickIndex) {
         this.playTickSound();
@@ -578,9 +626,14 @@ class WheelApp {
       if (progress < 1) {
         requestAnimationFrame(animate);
       } else {
+        // Snap exactly to dead center of winning slice
         this.currentAngle = finalAngle;
         this.render();
         this.isSpinning = false;
+        
+        if (statusText) statusText.textContent = 'ได้ผู้โชคดีแล้ว!';
+        if (pulseDot) pulseDot.classList.remove('spinning');
+
         this.onSpinComplete(this.names[winningIndex]);
       }
     };
@@ -588,9 +641,23 @@ class WheelApp {
     requestAnimationFrame(animate);
   }
 
-  // Smooth deceleration easing function
-  easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 4);
+  // Smooth deceleration easing with realistic spring overshoot and pull-back
+  computeOvershootAngle(startAngle, totalDelta, overshootRad, t) {
+    if (t >= 1) return startAngle + totalDelta;
+    if (t <= 0) return startAngle;
+
+    // Base smooth quartic deceleration
+    const baseEase = 1 - Math.pow(1 - t, 4);
+    
+    // Suspense overshoot pulse in the final 35% of the animation (t from 0.65 to 1.0)
+    let overshoot = 0;
+    if (t > 0.65) {
+      const localT = (t - 0.65) / 0.35; // 0 to 1
+      // Sine wave pulse that rises, peaks at localT ~ 0.45, then smoothly pulls backwards to 0 at localT = 1.0
+      overshoot = Math.sin(localT * Math.PI) * Math.pow(1 - localT * 0.3, 2) * overshootRad;
+    }
+
+    return startAngle + (totalDelta * baseEase) + overshoot;
   }
 
   onSpinComplete(winner) {
